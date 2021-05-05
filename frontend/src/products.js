@@ -21,7 +21,7 @@ const products = [
     brand: 'Apple',
     category: 'Electronics',
     price: 599.99,
-    countInStock: 7,
+    countInStock: 11,
     rating: 4.0,
     numReviews: 8,
   },
@@ -77,6 +77,6 @@ const products = [
     rating: 4,
     numReviews: 12,
   },
-]
+];
 
-export default products
+export default products;
