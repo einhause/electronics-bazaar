@@ -6,8 +6,6 @@ import {
   Col,
   ListGroup,
   Image,
-  Form,
-  Buttom,
   Card,
   ListGroupItem,
   FormControl,
@@ -15,7 +13,7 @@ import {
 } from 'react-bootstrap';
 import { BiTrash } from 'react-icons/bi';
 import Message from '../components/Message';
-import { addToCart } from '../actions/cartActions';
+import { addToCart, removeFromCart } from '../actions/cartActions';
 
 const CartScreen = () => {
   const { id: productId } = useParams();
@@ -31,7 +29,9 @@ const CartScreen = () => {
     if (productId) dispatch(addToCart(productId, qty));
   }, [dispatch, productId, qty]);
 
-  const removeFromCartHandler = () => {};
+  const removeFromCartHandler = (id) => {
+    dispatch(removeFromCart(id));
+  };
 
   const checkoutHandler = () => {
     history.push('/login?redirect=shopping');
