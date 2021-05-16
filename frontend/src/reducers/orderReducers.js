@@ -9,6 +9,9 @@ import {
   ORDER_PAY_SUCCESS,
   ORDER_PAY_FAIL,
   ORDER_PAY_RESET,
+  ORDER_MY_ORDERS_REQUEST,
+  ORDER_MY_ORDERS_SUCCESS,
+  ORDER_MY_ORDERS_FAIL,
 } from '../constants/orderConstants';
 
 export const orderCreateReducer = (state = {}, action) => {
@@ -53,6 +56,20 @@ export const orderPayReducer = (state = {}, action) => {
       return { loading: false, error: payload };
     case ORDER_PAY_RESET:
       return {};
+    default:
+      return state;
+  }
+};
+
+export const orderMyOrdersReducer = (state = { orders: [] }, action) => {
+  const { type, payload } = action;
+  switch (type) {
+    case ORDER_MY_ORDERS_REQUEST:
+      return { ...state, loading: true };
+    case ORDER_MY_ORDERS_SUCCESS:
+      return { ...state, loading: false, orders: payload };
+    case ORDER_MY_ORDERS_FAIL:
+      return { ...state, loading: false, error: payload };
     default:
       return state;
   }
