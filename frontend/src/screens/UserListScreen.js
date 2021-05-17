@@ -6,15 +6,23 @@ import { FaCheck, FaTimes, FaTrash, FaEdit } from 'react-icons/fa';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { listUsers } from '../actions/userActions';
+import { useHistory } from 'react-router';
 
 const UserListScreen = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const { loading, error, users } = useSelector((state) => state.userList);
 
+  const { userInfo } = useSelector((state) => state.userLogin);
+
   useEffect(() => {
-    dispatch(listUsers());
-  }, [dispatch]);
+    if (userInfo && userInfo.isAdmin) {
+      dispatch(listUsers());
+    } else {
+      history.push('/login');
+    }
+  }, [dispatch, history, userInfo]);
 
   const deleteHandler = () => {};
 
