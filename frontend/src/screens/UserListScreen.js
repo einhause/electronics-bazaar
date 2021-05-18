@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaCheck, FaTimes, FaTrash, FaEdit } from 'react-icons/fa';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { listUsers } from '../actions/userActions';
+import { deleteUser, listUsers } from '../actions/userActions';
 import { useHistory } from 'react-router';
 
 const UserListScreen = () => {
@@ -13,6 +13,7 @@ const UserListScreen = () => {
   const history = useHistory();
 
   const { loading, error, users } = useSelector((state) => state.userList);
+  const { success: successDelete } = useSelector((state) => state.userDelete);
 
   const { userInfo } = useSelector((state) => state.userLogin);
 
@@ -22,9 +23,13 @@ const UserListScreen = () => {
     } else {
       history.push('/login');
     }
-  }, [dispatch, history, userInfo]);
+  }, [dispatch, history, userInfo, successDelete]);
 
-  const deleteHandler = () => {};
+  const deleteHandler = (id, name) => {
+    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
+      dispatch(deleteUser(id));
+    }
+  };
 
   return (
     <>
@@ -68,7 +73,7 @@ const UserListScreen = () => {
                   <Button
                     variant='danger'
                     className='btn-sm'
-                    onClick={() => deleteHandler(user._id)}
+                    onClick={() => deleteHandler(user._id, user.name)}
                   >
                     <FaTrash />
                   </Button>
