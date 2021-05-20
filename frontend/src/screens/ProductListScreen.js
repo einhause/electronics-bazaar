@@ -2,11 +2,16 @@ import React, { useEffect } from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Table, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
 import { FaTrash, FaEdit, FaPlus } from 'react-icons/fa';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { listProducts, deleteProduct } from '../actions/productActions';
-import { useHistory } from 'react-router';
+import {
+  listProducts,
+  deleteProduct,
+  createProduct,
+} from '../actions/productActions';
+import { PRODUCT_CREATE_RESET } from '../constants/productConstants';
 
 const ProductListScreen = () => {
   const dispatch = useDispatch();
@@ -19,6 +24,13 @@ const ProductListScreen = () => {
   } = useSelector((state) => state.productList);
 
   const {
+    loading: loadingCreate,
+    error: errorCreate,
+    success: successCreate,
+    product: createdProduct,
+  } = useSelector((state) => state.productCreate);
+
+  const {
     loading: loadingDelete,
     error: errorDelete,
     success: successDelete,
@@ -27,14 +39,28 @@ const ProductListScreen = () => {
   const { userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
-    if (userInfo && userInfo.isAdmin) {
-      dispatch(listProducts());
-    } else {
+    dispatch({ type: PRODUCT_CREATE_RESET });
+    if (!userInfo.isAdmin) {
       history.push('/login');
     }
-  }, [dispatch, history, userInfo, successDelete]);
 
-  const createProductHandler = () => {};
+    if (successCreate) {
+      history.push(`/admin/product/${createdProduct._id}/edit`);
+    } else {
+      dispatch(listProducts());
+    }
+  }, [
+    dispatch,
+    history,
+    userInfo,
+    successDelete,
+    successCreate,
+    createdProduct,
+  ]);
+
+  const createProductHandler = () => {
+    dispatch(createProduct());
+  };
 
   const deleteHandler = (id, name) => {
     if (window.confirm(`Are you sure you want to delete ${name}?`)) {
@@ -56,6 +82,8 @@ const ProductListScreen = () => {
       </Row>
       {loadingDelete && <Loader />}
       {errorDelete && <Message>{errorDelete}</Message>}
+      {loadingCreate && <Loader />}
+      {errorCreate && <Message>{errorCreate}</Message>}
       {loadingProduct ? (
         <Loader />
       ) : errorProduct ? (
