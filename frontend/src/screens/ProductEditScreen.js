@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import {
   Form,
@@ -6,6 +7,7 @@ import {
   FormGroup,
   FormLabel,
   FormControl,
+  FormFile,
 } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
@@ -29,6 +31,7 @@ const ProductEditScreen = () => {
   const [category, setCategory] = useState('');
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   const {
     loading: loadingDetails,
@@ -41,6 +44,8 @@ const ProductEditScreen = () => {
     error: errorUpdate,
     success: successUpdate,
   } = useSelector((state) => state.productUpdate);
+
+  const { userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
     if (successUpdate) {
@@ -61,6 +66,30 @@ const ProductEditScreen = () => {
       }
     }
   }, [dispatch, product, productId, successUpdate, history]);
+
+  const uploadFileHandler = async (e) => {
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+    setUploading(true);
+
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+
+      const { data } = await axios.post('/api/upload', formData, config);
+
+      setImage(data);
+      setUploading(false);
+    } catch (err) {
+      console.error(err);
+      setUploading(false);
+    }
+  };
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -121,6 +150,14 @@ const ProductEditScreen = () => {
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
               ></FormControl>
+              <FormFile
+                id='image-file'
+                label='Choose File'
+                custom
+                onChange={uploadFileHandler}
+              >
+                {uploading && <Loader />}
+              </FormFile>
             </FormGroup>
 
             <FormGroup controlId='brand'>
@@ -134,7 +171,7 @@ const ProductEditScreen = () => {
             </FormGroup>
 
             <FormGroup controlId='countInStock'>
-              <FormLabel>counInStock</FormLabel>
+              <FormLabel>Count in Stock</FormLabel>
               <FormControl
                 type='number'
                 placeholder='Enter Count in Stock'
