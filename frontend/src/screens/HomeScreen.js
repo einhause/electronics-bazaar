@@ -8,6 +8,7 @@ import Message from '../components/Message';
 import Paginate from '../components/Paginate';
 import { listProducts } from '../actions/productActions';
 import ProductCarousel from '../components/ProductCarousel';
+import Meta from '../components/Meta';
 
 const HomeScreen = () => {
   const { keyword, pageNumber } = useParams();
@@ -22,6 +23,7 @@ const HomeScreen = () => {
 
   return (
     <>
+      <Meta />
       {!keyword && <ProductCarousel />}
       <br />
       <h1>Latest Products</h1>
